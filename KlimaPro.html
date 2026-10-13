@@ -209,10 +209,10 @@ async function flush(){
 let rdb=null,cloud='off';const synced={},pend=new Map(),queue=[];let pumping=false;
 /* ---------- sunucu senkronizasyonu (basit HTTP) ---------- */
 const SYNC_URL = 'https://klimapro-bat-e798.vercel.app';
-let syncEnabled = false;
-// sunucu varsa syncEnabled true yap
+let syncEnabled = true; // sunucu erişilemezse otomatik false olur
+// sunucu erişilebilir mi kontrol et
 setTimeout(async function(){
-  try { const r = await fetch(SYNC_URL + '/state'); if (r.ok) { syncEnabled = true; serverSync(); } } catch(e){}
+  try { const r = await fetch(SYNC_URL + '/state'); if (!r.ok) syncEnabled = false; else serverSync(); } catch(e){ syncEnabled = false; }
 }, 500);
 async function serverSync(){
   if (!syncEnabled || !SYNC_URL) return;
