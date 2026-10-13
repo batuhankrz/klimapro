@@ -8,17 +8,26 @@
 <title>KlimaPro – Saha &amp; Finans Yönetimi</title>
 <style>
 :root{
-  --bg:#f3f5f8;--card:#fff;--tx:#14202e;--mut:#64748b;--bd:#dbe2ea;--pri:#0b6bcb;--pri-tx:#fff;
-  --ok:#0f7a55;--warn:#a85f00;--bad:#c62828;--soft:#e8f1fc;--okbg:#e3f5ed;--warnbg:#fff1d9;--badbg:#fde8e8;
+  --bg:#f4f6fa;--card:#fff;--tx:#101a28;--mut:#63748b;--bd:#d9e0ea;--pri:#1a6ed8;--pri-tx:#fff;
+  --ok:#0f8a5f;--warn:#b26a00;--bad:#d6352c;--soft:#eaf2fc;--okbg:#e2f4ed;--warnbg:#fff0d8;--badbg:#fde5e5;
+  --shadow:0 1px 2px rgba(16,26,40,.05),0 8px 24px -12px rgba(16,26,40,.14);
+  --radius:14px;
   color-scheme:light;
   box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.card,.stat{box-shadow:var(--shadow)}
+.card,.stat,.btn,.it,.chip,input,select,textarea{border-radius:var(--radius)}
+h2{letter-spacing:-.01em}
+h3{letter-spacing:.05em}
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){--bg:#0e1520;--card:#172130;--tx:#e8eef5;--mut:#93a4b8;--bd:#2a3849;--pri:#4a9cf0;--pri-tx:#06121f;
-  --ok:#4cc79a;--warn:#f0b04a;--bad:#ff8a80;--soft:#1a2b40;--okbg:#12342a;--warnbg:#3a2d12;--badbg:#3d1c1c;color-scheme:dark}
+  :root:not([data-theme="light"]){--bg:#0d1420;--card:#151c2c;--tx:#e8eef5;--mut:#8fa1b8;--bd:#26344a;--pri:#4a9df0;--pri-tx:#081526;
+  --ok:#3fc9a0;--warn:#f0b04a;--bad:#ff8a80;--soft:#16243a;--okbg:#0f3026;--warnbg:#33280f;--badbg:#3a1a1a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.5);color-scheme:dark}
 }
-:root[data-theme="dark"]{--bg:#0e1520;--card:#172130;--tx:#e8eef5;--mut:#93a4b8;--bd:#2a3849;--pri:#4a9cf0;--pri-tx:#06121f;
-  --ok:#4cc79a;--warn:#f0b04a;--bad:#ff8a80;--soft:#1a2b40;--okbg:#12342a;--warnbg:#3a2d12;--badbg:#3d1c1c;color-scheme:dark}
+:root[data-theme="dark"]{--bg:#0d1420;--card:#151c2c;--tx:#e8eef5;--mut:#8fa1b8;--bd:#26344a;--pri:#4a9df0;--pri-tx:#081526;
+  --ok:#3fc9a0;--warn:#f0b04a;--bad:#ff8a80;--soft:#16243a;--okbg:#0f3026;--warnbg:#33280f;--badbg:#3a1a1a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.5);color-scheme:dark}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-text-size-adjust:100%}
@@ -108,10 +117,11 @@ textarea{resize:vertical}
 .ln2 input[type=checkbox]{flex:none;min-width:0}
 .ln2 .chk{margin:0}
 table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:7px 6px;border-bottom:1px solid var(--bd);text-align:left}
+th,td{padding:7px 6px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top}
 th{color:var(--mut);font-weight:600;font-size:12px}
 td.r,th.r{text-align:right}
 .tw{overflow-x:auto}
+.tw table{min-width:520px}
 canvas.sig{width:100%;height:160px;background:#fff;border:1px dashed var(--mut);border-radius:12px;touch-action:none}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:#14202e;color:#fff;padding:10px 16px;border-radius:10px;z-index:99;max-width:90%;font-size:14px}
 .banner{background:var(--warnbg);color:var(--warn);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:14px}
@@ -140,7 +150,7 @@ pre.small{white-space:pre-wrap;font-size:12px;background:var(--bg);padding:8px;b
    KlimaPro – HVAC Saha Yönetimi, Keşif ve Finans (tek dosya)
    Veri: cihazda (IndexedDB + localStorage) ve varsa bulutta (artifact db) saklanır.
    ===================================================================== */
-const COLS=['parties','products','warehouses','stock','devices','surveys','jobs','forms','invoices','payments','expenses','closings','staff','reminders','settings','debtlines','measurements'];const SERVIS_MODE=true;
+const COLS=['parties','products','warehouses','stock','devices','surveys','jobs','forms','invoices','payments','expenses','closings','staff','reminders','settings','debtlines','measurements'];
 const S={};COLS.forEach(c=>S[c]={});
 const IDB='klimapro',LSKEY='klimapro_state_v1';
 
@@ -187,7 +197,7 @@ async function loadLocal(){
   if(!raw){try{raw=localStorage.getItem(LSKEY)}catch(e){}}
   if(raw){try{const o=JSON.parse(raw);COLS.forEach(c=>{S[c]=o[c]||{}})}catch(e){}}
 }
-function scheduleSave(){dirty=true;renderStatus();clearTimeout(saveTimer);saveTimer=setTimeout(flush,200)}
+function scheduleSave(){dirty=true;renderStatus();clearTimeout(saveTimer);saveTimer=setTimeout(flush,150)}
 async function flush(){
   clearTimeout(saveTimer);
   const json=JSON.stringify(S);let ok=false;
@@ -195,7 +205,6 @@ async function flush(){
   try{if(json.length<4e6){localStorage.setItem(LSKEY,json);ok=true}}catch(e){}
   localOK=ok;dirty=false;renderStatus();
 }
-
 /* ---------- kalıcı kayıt: bulut (artifact db) ---------- */
 let rdb=null,cloud='off';const synced={},pend=new Map(),queue=[];let pumping=false;
 async function initCloud(){
@@ -468,7 +477,7 @@ function back(){route=hist.pop()||{v:'panel',id:null};render()}
 function renderNav(){
   const act=['party'].includes(route.v)?'parties':MORE.some(m=>m[0]===route.v)||route.v==='more'?'more':route.v;
   $('#tabs').innerHTML=NAV.map(n=>'<a data-go="'+n[0]+'" class="'+(act===n[0]?'on':'')+'"><span>'+n[1]+'</span>'+n[2]+'</a>').join('');
-  const all=[['panel','🏠','Panel'],['jobs','🛠️','İşler / Servis'],['parties','👥','Cari Hesaplar'],['stock','📦','Stok & Depo'],...MORE];
+  const all=[['panel','🏠','Panel'],['jobs','🛠️','İşler / Servis'],['devices','❄️','Cihazlar & QR'],['stock','📦','Stok & Depo'],...MORE];
   $('#side').innerHTML='<div class="logo">❄️ KlimaPro</div>'+all.map(n=>'<a data-go="'+n[0]+'" class="'+((route.v===n[0]||(route.v==='party'&&n[0]==='parties'))?'on':'')+'">'+n[1]+' '+n[2]+'</a>').join('');
 }
 const VIEWS={};
@@ -573,7 +582,7 @@ function partyRow(p){
   return '<div class="it" data-go="party" data-id="'+p.id+'"><div class="it-m"><b>'+esc(p.title)+'</b><small>'+esc({musteri:'Müşteri',tedarikci:'Tedarikçi',her_ikisi:'Müşteri/Tedarikçi'}[p.type])+' · '+esc(p.phone||'telefon yok')+'</small></div>'
   +'<div class="it-r"><b class="'+(b>0?'pos':b<0?'neg':'')+'">'+money(Math.abs(b))+'</b><small class="mut">'+(b>0?'alacak':b<0?'borç':'bakiye yok')+'</small></div></div>';
 }
-VIEWS.parties=m=>{
+VIEWS.parties=m=>{ m.innerHTML='<div class="empty">Servis sürümünde cari/finans modülü kapalı.</div>'; };if(0)VIEWS.parties=m=>{
   m.innerHTML='<div class="row sp"><h2>Cari Hesaplar</h2><button class="btn pri" data-act="newParty">+ Yeni cari</button></div>'
   +'<div class="chips">'+[['hepsi','Hepsi'],['musteri','Müşteriler'],['tedarikci','Tedarikçiler']].map(f=>'<span class="chip '+(ui.partyTab===f[0]?'on':'')+'" data-act="partyTab" data-id="'+f[0]+'">'+f[1]+'</span>').join('')+'</div>'
   +'<input id="pq" placeholder="Ara: unvan, telefon, vergi no…" value="'+esc(ui.q)+'" style="margin-bottom:10px"><div id="pl"></div>';
@@ -598,7 +607,7 @@ function partyModal(p={}){
 }
 ACT.newParty=()=>partyModal();
 ACT.editParty=id=>partyModal(S.parties[id]);
-VIEWS.party=m=>{
+VIEWS.party=m=>{ m.innerHTML='<div class="empty">Servis sürümünde cari/finans modülü kapalı.</div>'; };if(0)VIEWS.party=m=>{
   const p=S.parties[route.id];if(!p||p.deleted){m.innerHTML='<div class="empty">Cari bulunamadı.</div>'+backBtn;return}
   const b=partyBal(p);
   const debT=partyDebtTotals(p);
@@ -611,7 +620,7 @@ VIEWS.party=m=>{
   list('payments').filter(x=>x.partyId===p.id).forEach(x=>ent.push({d:x.date,t:(x.direction==='tahsilat'?'Tahsilat':'Ödeme')+' · '+x.method+(x.note?' · '+x.note:''),amt:x.direction==='tahsilat'?-x.amount:x.amount}));
   list('debtlines').filter(x=>x.partyId===p.id&&!x.closed).forEach(x=>{
     const tl=num(x.qty)*num(x.price||0);
-    ent.push({d:x.date,t:'Mal borcu · '+esc(x.name)+' · '+qf(x.qty)+' '+esc(x.unit||'')+(tl>0?' · '+money(tl):'')+(x.note?' · '+x.note:''),amt:tl,did:x.id});
+    ent.push({d:x.date,t:'Mal borcu · '+x.name+' · '+qf(x.qty)+' '+(x.unit||'')+(tl>0?' · '+money(tl):'')+(x.note?' · '+x.note:''),amt:tl,did:x.id});
   });
   ent.sort((a,b)=>a.d.localeCompare(b.d));let run=0;ent.forEach(e=>{run=r2(run+e.amt);e.run=run});
   const dev=list('devices').filter(d=>d.partyId===p.id);
@@ -637,27 +646,40 @@ VIEWS.party=m=>{
   +'<div>'
   +(ag.length?'<h3>Vade yaşlandırma</h3><div class="card tw"><table><tr><th></th><th class="r">Güncel</th><th class="r">1-30</th><th class="r">31-60</th><th class="r">61-90</th><th class="r">90+</th></tr>'+ag.map(x=>'<tr><td>'+(x.dir==='satis'?'Alacak':'Borç')+'</td><td class="r">'+money(x.a.cur)+'</td><td class="r">'+money(x.a.d30)+'</td><td class="r">'+money(x.a.d60)+'</td><td class="r">'+money(x.a.d90)+'</td><td class="r">'+money(x.a.d90p)+'</td></tr>').join('')+'</table></div>':'')
   +'<h3>Mal bazlı borç satırları ('+debT.open.length+' açık)</h3>'
-  +(debT.open.length?'<div class="card tw"><table><tr><th>Tarih</th><th>Mal / ürün</th><th class="r">Miktar</th><th class="r">Birim</th><th class="r">TL</th><th>Açıklama</th><th></th></tr>'
-  +debT.open.map(x=>{const tl=num(x.qty)*num(x.price||0);return '<tr><td>'+dtr(x.date)+'</td><td>'+esc(x.name)+'</td><td class="r">'+qf(x.qty)+'</td><td class="r">'+esc(x.unit||'')+'</td><td class="r">'+money(tl)+'</td><td class="sm">'+esc(x.note||'')+'</td><td><button class="btn sm danger" data-act="closeDebt" data-id="'+x.id+'">Kapandı ✓</button></td></tr>'}).join('')+'</table></div>':'<div class="empty">Açık mal borcu yok.</div>')
+  +(debT.open.length?'<div>'
+  +debT.open.map(x=>{const tl=num(x.qty)*num(x.price||0);return '<div class="card"><div class="row sp"><div><b>'+esc(x.name)+'</b> · '+qf(x.qty)+' '+esc(x.unit||'')+(tl>0?' · <b class="pos">'+money(tl)+'</b>':'')+'<div class="mut sm">'+dtr(x.date)+(x.note?' · '+esc(x.note):'')+'</div></div><button class="btn sm danger" data-act="closeDebt" data-id="'+x.id+'">Kapandı ✓</button></div></div>'}).join('')+'</div>':'<div class="empty">Açık mal borcu yok.</div>')
   +'<h3>Cihazlar ('+dev.length+')</h3>'+(dev.length?dev.map(deviceRow).join(''):'<div class="empty">Kayıtlı cihaz yok.</div>')
-  +'<h3>Hesap hareketleri</h3>'+(ent.length?'<div class="card tw"><table><tr><th>Tarih</th><th>İşlem</th><th class="r">Tutar</th><th class="r">Bakiye</th></tr>'+ent.slice().reverse().map(e=>'<tr><td>'+(e.d==='0000-00-00'?'—':dtr(e.d))+'</td><td>'+(e.id?'<a href="#" data-act="invView" data-id="'+e.id+'">'+esc(e.t)+'</a>':esc(e.t))+'</td><td class="r '+(e.amt>0?'pos':'neg')+'">'+money(Math.abs(e.amt))+' '+(e.amt>0?'(borç)':'(alacak)')+'</td><td class="r">'+money(e.run)+'</td></tr>').join('')+'</table></div>':'<div class="empty">Hareket yok.</div>')
+  +'<h3>Hesap hareketleri</h3>'+(ent.length?'<div class="card tw"><table style="min-width:640px"><colgroup><col style="width:110px"><col><col style="width:130px"><col style="width:130px"></colgroup><tr><th>Tarih</th><th>İşlem</th><th class="r">Tutar</th><th class="r">Bakiye</th></tr>'+ent.slice().reverse().map(e=>'<tr><td>'+(e.d==='0000-00-00'?'—':dtr(e.d))+'</td><td>'+(e.id?'<a href="#" data-act="invView" data-id="'+e.id+'">'+esc(e.t)+'</a>':esc(e.t))+'</td><td class="r '+(e.amt>0?'pos':'neg')+'">'+money(Math.abs(e.amt))+' '+(e.amt>0?'(borç)':'(alacak)')+'</td><td class="r">'+money(e.run)+'</td></tr>').join('')+'</table></div>':'<div class="empty">Hareket yok.</div>')
   +'</div></div>';
   // masaüstünde iki kolon: özet sağda
   if(window.innerWidth>=900){
     const grid=m.querySelector('div[style*="grid-template-columns:1fr"]');
-    if(grid)grid.style.gridTemplateColumns='1fr 280px';
+    if(grid)grid.style.gridTemplateColumns='1fr 340px';
   }
 };
 ACT.newDebt=id=>{
   const p=S.parties[id];if(!p)return;
   formModal({title:'Mal borcu ekle · '+p.title,values:{},
-    fields:[{n:'productId',l:'Mal / ürün (katalog)',t:'select',o:list('products').sort(byName).map(x=>[x.id,x.name]),req:true},
+    fields:[{n:'productId',l:'Mal / ürün (katalog)',t:'select',o:[...list('products').sort(byName).map(x=>[x.id,x.name]),['__custom','— serbest ürün (elle gir) —']],req:true},
       {n:'qty',l:'Miktar (ör. 3)',t:'number',req:true,min:0.001,help:'Ör: 3 metre bakır boru için miktar=3, birim=m'},
       {n:'price',l:'TL karşılığı (birim fiyat ₺, KDV hariç)',t:'number',help:'Zorunlu değildir; boş bırakılırsa yalnız miktar borcu kaydedilir'},
       {n:'note',l:'Açıklama',t:'text',ph:'Örn: 5/8-3/8 bakır boru, boru çekimi'}],
-    onSubmit:d=>{const pr=S.products[d.productId];if(!pr){toast('Ürün seçin');return false}
-      const price=d.price?r2(d.price):0; // TL boş bırakılırsa sıfır, miktar borcu kalır
-      addDebtLine(id,d.productId,d.qty,price,d.note);toast('Mal borcu kaydedildi: '+pr.name);render();
+    onSubmit:d=>{const pr=S.products[d.productId];
+      let pid=d.productId;let prObj=pr;
+      if(d.productId==='__custom'){
+        if(!d.note||!d.note.trim()){toast('Serbest ürün için açıklama girin');return false}
+        // serbest ürün: katalogdaki olmayan ürün notu ile kaydedilir
+        const parts=d.note.split(/[–\-—]/).map(x=>x.trim()).filter(Boolean);
+        const name=parts[0]||d.note;const unit=(parts[1]||'').toLowerCase();
+        const exist=list('products').find(p=>p.name===name);
+        if(exist){pid=exist.id;prObj=exist}else{
+          pid=put('products',{name,unit:unit||'adet',vat:cfg().vatDefault,salePrice:num(d.price),buyPrice:0,minStock:0}).id;
+          prObj=S.products[pid];
+        }
+      }
+      if(!prObj){toast('Ürün seçin');return false}
+      const price=d.price?r2(d.price):0;
+      addDebtLine(id,pid,d.qty,price,d.note);toast('Mal borcu kaydedildi: '+prObj.name);render();
     }});
 };
 ACT.closeDebt=async id=>{const x=S.debtlines[id];if(!x)return;if(await ask('Bu mal borcu satırı kapandı olarak işaretlensin mi? Yeni bir kapama kaydı hareket olarak eklenir.','Kapandı işaretle')){
