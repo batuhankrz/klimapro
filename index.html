@@ -208,7 +208,7 @@ async function flush(){
 /* ---------- kalıcı kayıt: bulut (artifact db) ---------- */
 let rdb=null,cloud='off';const synced={},pend=new Map(),queue=[];let pumping=false;
 /* ---------- sunucu senkronizasyonu (basit HTTP) ---------- */
-const SYNC_URL = 'http://localhost:3000';
+const SYNC_URL = 'https://klimapro-bat-e798.vercel.app';
 let syncEnabled = false;
 // sunucu varsa syncEnabled true yap
 setTimeout(async function(){
@@ -503,7 +503,7 @@ function sigPad(c){
 
 /* ---------- yönlendirme ---------- */
 const NAV=[['panel','🏠','Panel'],['jobs','🛠️','İşler'],['parties','👥','Cari'],['stock','📦','Stok'],['more','☰','Daha fazla']];
-const MORE=[['invoices','🧾','Fatura & KDV'],['cash','💵','Kasa & Gider'],['devices','❄️','Cihazlar & QR'],['surveys','📐','Keşif'],['measure','📏','AI Ölçüm (AR)'],['reminders','🔔','Bakım Hatırlatma'],['bonus','🏆','Personel & Prim'],['settings','⚙️','Ayarlar & Yedek']];
+const MORE=[['invoices','🧾','Fatura & KDV'],['cash','💵','Kasa & Gider'],['devices','❄️','Cihazlar & QR'],['surveys','📐','Keşif'],['measure','📏','AI Ölçüm (AR)'],['ai','🤖','AI Asistan'],['reminders','🔔','Bakım Hatırlatma'],['bonus','🏆','Personel & Prim'],['settings','⚙️','Ayarlar & Yedek']];
 let route={v:'panel',id:null};const hist=[];const ui={jobF:'bugun',partyTab:'hepsi',q:'',stockTab:'urun',invTab:'satis',cashDate:dstr(),bonusM:dstr().slice(0,7),devQ:''};
 function go(v,id=null,push=true){if(push)hist.push(route);route={v,id};render();window.scrollTo(0,0)}
 function back(){route=hist.pop()||{v:'panel',id:null};render()}
@@ -680,7 +680,7 @@ VIEWS.party=m=>{
   +(ag.length?'<h3>Vade yaşlandırma</h3><div class="card tw"><table><tr><th></th><th class="r">Güncel</th><th class="r">1-30</th><th class="r">31-60</th><th class="r">61-90</th><th class="r">90+</th></tr>'+ag.map(x=>'<tr><td>'+(x.dir==='satis'?'Alacak':'Borç')+'</td><td class="r">'+money(x.a.cur)+'</td><td class="r">'+money(x.a.d30)+'</td><td class="r">'+money(x.a.d60)+'</td><td class="r">'+money(x.a.d90)+'</td><td class="r">'+money(x.a.d90p)+'</td></tr>').join('')+'</table></div>':'')
   +'<h3>Mal bazlı borç satırları ('+debT.open.length+' açık)</h3>'
   +(debT.open.length?'<div>'
-  +debT.open.map(x=>{const tl=num(x.qty)*num(x.price||0);return '<div class="card"><div class="row sp"><div><b>'+esc(x.name)+'</b> · '+qf(x.qty)+' '+esc(x.unit||'')+(tl>0?' · <b class="pos">'+money(tl)+'</b>':'')+'<div class="mut sm">'+dtr(x.date)+(x.note?' · '+esc(x.note):'')+'</div></div><button class="btn sm danger" data-act="closeDebt" data-id="'+x.id+'">Kapandı ✓</button></div></div>'}).join('')+'</div>':'<div class="empty">Açık mal borcu yok.</div>')
+  +debT.open.map(x=>{const tl=num(x.qty)*num(x.price||0);return '<div class="card"><div class="row sp"><div><b>'+esc(x.name)+'</b> · '+qf(x.qty)+' '+esc(x.unit||'')+(tl>0?' · <b class="pos">'+money(tl)+'</b>':'')+'<div class="mut sm">'+dtr(x.date)+(x.note?' · '+esc(x.note):'')+'<div class="mut sm">⚠ Açık borç — kapalı değildir</div></div></div><button class="btn sm danger" data-act="closeDebt" data-id="'+x.id+'">Borcu kapat</button></div></div>'}).join('')+'</div>':'<div class="empty">Açık mal borcu yok.</div>')
   +'<h3>Cihazlar ('+dev.length+')</h3>'+(dev.length?dev.map(deviceRow).join(''):'<div class="empty">Kayıtlı cihaz yok.</div>')
   +'<h3>Hesap hareketleri</h3>'+(ent.length?'<div class="card tw"><table style="min-width:640px"><colgroup><col style="width:110px"><col><col style="width:130px"><col style="width:130px"></colgroup><tr><th>Tarih</th><th>İşlem</th><th class="r">Tutar</th><th class="r">Bakiye</th></tr>'+ent.slice().reverse().map(e=>'<tr><td>'+(e.d==='0000-00-00'?'—':dtr(e.d))+'</td><td>'+(e.id?'<a href="#" data-act="invView" data-id="'+e.id+'">'+esc(e.t)+'</a>':esc(e.t))+'</td><td class="r '+(e.amt>0?'pos':'neg')+'">'+money(Math.abs(e.amt))+' '+(e.amt>0?'(borç)':'(alacak)')+'</td><td class="r">'+money(e.run)+'</td></tr>').join('')+'</table></div>':'<div class="empty">Hareket yok.</div>')
   +'</div></div>';
@@ -715,16 +715,79 @@ ACT.newDebt=id=>{
       addDebtLine(id,pid,d.qty,price,d.note);toast('Mal borcu kaydedildi: '+prObj.name);render();
     }});
 };
-ACT.closeDebt=async id=>{const x=S.debtlines[id];if(!x)return;if(await ask('Bu mal borcu satırı kapandı olarak işaretlensin mi? Yeni bir kapama kaydı hareket olarak eklenir.','Kapandı işaretle')){
+ACT.closeDebt=async id=>{const x=S.debtlines[id];if(!x)return;if(await ask('Bu mal borcu satırı kapandı olarak işaretlensin mi?','Kapandı işaretle')){
   put('debtlines',{...x,closed:true,closedAt:Date.now()});
-  // TL değeri varsa cari bakiyesini azaltan (alacaklı) bir hareket kaydı
-  const tl=r2(num(x.qty)*num(x.price||0));
-  if(tl>0)put('debtlines',{partyId:x.partyId,productId:x.productId,qty:-x.qty,price:x.price,unit:x.unit,name:x.name,note:'Kapandı: '+(x.note||''),date:dstr(),closed:false,closing:true,ref:x.id});
   toast('Kapandı');render();
 }};
 ACT.payFor=id=>{const [pid,dir]=id.split('|');payModal(dir,{partyId:pid})};
 ACT.invFor=id=>invoiceModal({partyId:id});
 ACT.jobFor=id=>jobModal({partyId:id,address:(P(id)||{}).address});
+
+/* =====================================================================
+   AI ASİSTAN (Gemini API - kullanıcı kendi anahtarını girer)
+   ===================================================================== */
+let aiChatHistory = [];
+function aiContext() {
+  // AI'ya göndermek için kısa özet context oluştur
+  const out = {
+    cariler: list('parties').slice(0,50).map(p=>({ad:p.title,tel:p.phone,bakiye:partyBal(p)})),
+    urunler: list('products').slice(0,50).map(p=>({ad:p.name,birim:p.unit,satish:p.salePrice})),
+    stokKritik: lowStock().map(p=>({ad:p.name,stok:stockTotal(stockMap(),p.id)})),
+    acikIsler: list('jobs').filter(j=>['planli','yolda','basladi'].includes(j.status)).slice(0,30).map(j=>({tur:JT[j.type]||j.type,musteri:partyName(j.partyId),tarih:j.at,status:JS[j.status]?JS[j.status][0]:j.status})),
+    ayToplam: {tahsilat: sum(list('payments').filter(p=>p.date.startsWith(dstr().slice(0,7))),p=>p.amount),
+               gider: sum(list('expenses').filter(e=>e.date.startsWith(dstr().slice(0,7))),e=>e.amount)}
+  };
+  return JSON.stringify(out);
+}
+async function aiCall(prompt) {
+  const c = cfg();
+  const key = c.aiApiKey;
+  if (!key) throw new Error('AI API anahtarı tanımlı değil. Ayarlar → AI Asistan bölümünden girin.');
+  const ctx = aiContext();
+  aiChatHistory.push({role:'user', text: prompt});
+  // Gemini API
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' + encodeURIComponent(key);
+  const payload = {
+    contents: aiChatHistory.slice(-10).map(h => ({role: h.role==='user' ? 'user' : 'model', parts:[{text:h.text}]})),
+    systemInstruction: {parts:[{text: 'Sen bir HVAC/klima servis firmasının iş asistanısın. Türkçe konuşursun. Kullanıcının cari, stok, iş durumu verisi şöyledir (JSON): '+ctx+'. Bu veriye dayanarak kısa, net, aksiyon alınabilir cevaplar ver. Yalnızca bu bağlamda verdiğin bilgilerden emin değilsen belirt.'}]} 
+  };
+  const r = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error('AI hatası: '+(e.error?e.error.message:'HTTP '+r.status)); }
+  const d = await r.json();
+  const txt = d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts && d.candidates[0].content.parts[0] ? d.candidates[0].content.parts[0].text : '';
+  if (!txt) throw new Error('AI boş cevap döndü');
+  aiChatHistory.push({role:'model', text: txt});
+  return txt;
+}
+VIEWS.ai=m=>{
+  const c=cfg();
+  m.innerHTML='<div class="row sp"><h2>🤖 AI Asistan</h2></div>'
+  +'<p class="mut sm">Kendi iş verileriniz üzerinden Türkçe sorular sorun: "Bugünkü açık işler ne durumda?", "Hangi caride ne kadar alacak var?", "Kritik stok hangileri?", "Bu ay kaç lira tahsilat yaptım?". Verileriniz sunucuya gönderilmez; yalnızca Google Gemini API’ye gönderilir.</p>'
+  +'<div class="card">'
+  +'<div class="row sp"><div><b>AI API Anahtarı</b><div class="mut sm">Google AI Studio’dan (aistudio.google.com) ücretsiz alabilirsiniz</div></div>'
+  +'<div class="row"><input id="aikey" type="password" placeholder="AIza..." style="max-width:260px" value="'+esc(c.aiApiKey||'')+'">'
+  +'<button class="btn sm pri" data-act="saveAIKey">Kaydet</button></div></div>'
+  +'</div>'
+  +'<div class="card"><div id="aichat" style="min-height:200px;max-height:60vh;overflow-y:auto;margin-bottom:10px">'+(aiChatHistory.length?aiChatHistory.map(h=>'<div class="it"><div class="it-m"><b>'+(h.role==='user'?'Siz':'AI')+'</b><div style="white-space:pre-wrap">'+esc(h.text)+'</div></div></div>').join(''):'<div class="empty">Sorunuzu yazın ve gönderin.</div>')+'</div>'
+  +'<div class="row"><input id="aiq" placeholder="Örn: Bugün hangi işlerim var?" style="flex:1">'
+  +'<button class="btn pri" data-act="aiSend">Gönder</button></div></div>';
+  setTimeout(()=>{const q=$('#aiq');if(q)q.onkeydown=e=>{if(e.key==='Enter')ACT.aiSend()}},50);
+};
+ACT.saveAIKey=()=>{const v=$('#aikey').value.trim();setCfg({aiApiKey:v});toast(v?'API anahtarı kaydedildi':'API anahtarı silindi');render()};
+ACT.aiSend=async()=>{
+  const q=$('#aiq').value.trim();if(!q){toast('Soru yazın');return}
+  if(!cfg().aiApiKey){toast('Önce AI API anahtarını kaydedin');return}
+  $('#aiq').value='';
+  aiChatHistory.push({role:'user',text:q});
+  // render loading state
+  const chat=$('#aichat');if(chat){chat.innerHTML=aiChatHistory.map(h=>'<div class="it"><div class="it-m"><b>'+(h.role==='user'?'Siz':'AI')+'</b><div style="white-space:pre-wrap">'+esc(h.text)+'</div></div></div>').join('')+'<div class="it"><div class="it-m"><b>AI</b><div class="mut">düşünüyor…</div></div></div>';chat.scrollTop=chat.scrollHeight}
+  try {
+    const ans=await aiCall(q);
+    const chat2=$('#aichat');if(chat2){chat2.innerHTML=aiChatHistory.map(h=>'<div class="it"><div class="it-m"><b>'+(h.role==='user'?'Siz':'AI')+'</b><div style="white-space:pre-wrap">'+esc(h.text)+'</div></div></div>').join('');chat2.scrollTop=chat2.scrollHeight}
+  }catch(e){
+    const chat3=$('#aichat');if(chat3){chat3.innerHTML+='<div class="it"><div class="it-m"><b class="neg">Hata</b><div class="sm">'+esc(e.message)+'</div></div></div>';chat3.scrollTop=chat3.scrollHeight}
+  }
+};
 
 /* =====================================================================
    STOK & DEPO

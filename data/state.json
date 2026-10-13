@@ -1,1 +1,191 @@
-{}
+{
+  "parties": {
+    "mv78pvs45edpk": {
+      "type": "musteri",
+      "kind": "bireysel",
+      "title": "Mal Borcu Test Cari",
+      "phone": "",
+      "email": "",
+      "taxOffice": "",
+      "taxNo": "",
+      "city": "",
+      "address": "",
+      "termDays": 0,
+      "opening": 0,
+      "kvkk": false,
+      "note": "",
+      "id": "mv78pvs45edpk",
+      "updated": 1791929770276
+    }
+  },
+  "products": {
+    "mv78ozd92jyle": {
+      "key": "pipe_1/4",
+      "name": "Bakır boru 1/4\" (6,35 mm)",
+      "category": "Bakır boru",
+      "unit": "m",
+      "vat": 20,
+      "salePrice": 0,
+      "buyPrice": 0,
+      "minStock": 0,
+      "id": "mv78ozd92jyle",
+      "updated": 1791929728269
+    },
+    "mv78ozda4668b": {
+      "key": "pipe_3/8",
+      "name": "Bakır boru 3/8\" (9,52 mm)",
+      "category": "Bakır boru",
+      "unit": "m",
+      "vat": 20,
+      "salePrice": 0,
+      "buyPrice": 0,
+      "minStock": 0,
+      "id": "mv78ozda4668b",
+      "updated": 1791929728270
+    },
+    "mv78ozdc7iek0": {
+      "key": "pipe_1/2",
+      "name": "Bakır boru 1/2\" (12,7 mm)",
+      "category": "Bakır boru",
+      "unit": "m",
+      "vat": 20,
+      "salePrice": 0,
+      "buyPrice": 0,
+      "minStock": 0,
+      "id": "mv78ozdc7iek0",
+      "updated": 1791929728272
+    },
+    "mv78ozde6tklc": {
+      "key": "pipe_5/8",
+      "name": "Bakır boru 5/8\" (15,88 mm)",
+      "category": "Bakır boru",
+      "unit": "m",
+      "vat": 20,
+      "salePrice": 0,
+      "buyPrice": 0,
+      "minStock": 0,
+      "id": "mv78ozde6tklc",
+      "updated": 1791929728274
+    },
+    "mv78ozdft972y": {
+      "key": "pipe_3/4",
+      "name": "Bakır boru 3/4\" (19,05 mm)",
+      "category": "Bakır boru",
+      "unit": "m",
+      "vat": 20,
+      "salePrice": 0,
+      "buyPrice": 0,
+      "minStock": 0,
+      "id": "mv78ozdft972y",
+      "updated": 1791929728275
+    },
+    "mv78ozdgmljq5": {
+      "key": "insul",
+      "name": "Boru izolasyonu",
+      "category": "İzolasyon",
+      "unit": "m",
+      "vat": 20,
+      "salePrice": 0,
+      "buyPrice": 0,
+      "minStock": 0,
+      "id": "mv78ozdgmljq5",
+      "updated": 1791929728276
+    },
+    "mv78ozdi6qbt8": {
+      "key": "drain",
+      "name": "Drenaj hortumu",
+      "category": "Drenaj",
+      "unit": "m",
+      "vat": 20,
+      "salePrice": 0,
+      "buyPrice": 0,
+      "minStock": 0,
+      "id": "mv78ozdi6qbt8",
+      "updated": 1791929728278
+    },
+    "mv78ozdjdnpa1": {
+      "key": "cable",
+      "name": "Sinyal / enerji kablosu",
+      "category": "Kablo",
+      "unit": "m",
+      "vat": 20,
+      "salePrice": 0,
+      "buyPrice": 0,
+      "minStock": 0,
+      "id": "mv78ozdjdnpa1",
+      "updated": 1791929728279
+    },
+    "mv78ozdk3yeei": {
+      "key": "kanal",
+      "name": "Plastik kanal",
+      "category": "Sarf malzeme",
+      "unit": "m",
+      "vat": 20,
+      "salePrice": 0,
+      "buyPrice": 0,
+      "minStock": 0,
+      "id": "mv78ozdk3yeei",
+      "updated": 1791929728280
+    },
+    "mv78ozdp153o2": {
+      "key": "konsol",
+      "name": "Dış ünite konsol takımı",
+      "category": "Sarf malzeme",
+      "unit": "adet",
+      "vat": 20,
+      "salePrice": 0,
+      "buyPrice": 0,
+      "minStock": 0,
+      "id": "mv78ozdp153o2",
+      "updated": 1791929728285
+    },
+    "mv78ozdqqdroo": {
+      "key": "gas",
+      "name": "Soğutucu gaz (ek şarj)",
+      "category": "Gaz",
+      "unit": "gr",
+      "vat": 20,
+      "salePrice": 0,
+      "buyPrice": 0,
+      "minStock": 0,
+      "id": "mv78ozdqqdroo",
+      "updated": 1791929728286
+    }
+  },
+  "warehouses": {
+    "wh_merkez": {
+      "id": "wh_merkez",
+      "name": "Merkez Depo",
+      "kind": "merkez",
+      "updated": 1791929767837
+    }
+  },
+  "stock": {},
+  "devices": {},
+  "surveys": {},
+  "jobs": {},
+  "forms": {},
+  "invoices": {},
+  "payments": {},
+  "expenses": {},
+  "closings": {},
+  "staff": {},
+  "reminders": {},
+  "settings": {},
+  "debtlines": {
+    "mv78px3p7lxqc": {
+      "partyId": "mv78pvs45edpk",
+      "productId": "mv78ozd92jyle",
+      "qty": 3,
+      "price": 100,
+      "unit": "m",
+      "name": "Bakır boru 1/4\" (6,35 mm)",
+      "note": "TEST - 5/8-3/8 bakır boru",
+      "date": "2026-10-13",
+      "closed": false,
+      "id": "mv78px3p7lxqc",
+      "updated": 1791929771989
+    }
+  },
+  "measurements": {}
+}
