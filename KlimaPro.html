@@ -207,6 +207,39 @@ async function flush(){
 }
 /* ---------- kalıcı kayıt: bulut (artifact db) ---------- */
 let rdb=null,cloud='off';const synced={},pend=new Map(),queue=[];let pumping=false;
+/* ---------- sunucu senkronizasyonu (basit HTTP) ---------- */
+const SYNC_URL = 'http://localhost:3000';
+let syncEnabled = false;
+// sunucu varsa syncEnabled true yap
+setTimeout(async function(){
+  try { const r = await fetch(SYNC_URL + '/state'); if (r.ok) { syncEnabled = true; serverSync(); } } catch(e){}
+}, 500);
+async function serverSync(){
+  if (!syncEnabled || !SYNC_URL) return;
+  try {
+    const r = await fetch(SYNC_URL + '/state');
+    if (r.ok) {
+      const remote = await r.json();
+      let changed = false;
+      COLS.forEach(col => {
+        if (!remote[col]) return;
+        Object.values(remote[col]).forEach(r2 => {
+          const l = S[col][r2.id];
+          if (!l || (r2.updated||0) > (l.updated||0)) { S[col][r2.id] = r2; changed = true; }
+        });
+      });
+      if (changed) { scheduleSave(); render(); }
+    }
+  } catch(e) {}
+}
+async function serverPush(){
+  if (!syncEnabled || !SYNC_URL) return;
+  try {
+    await fetch(SYNC_URL + '/sync', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(S)});
+  } catch(e) {}
+}
+setInterval(serverSync, 10000);
+setTimeout(serverSync, 1000);
 async function initCloud(){
   try{if(!window.claude||!claude.use)return;cloud='wait';renderStatus();rdb=await claude.use('db')}catch(e){rdb=null}
   if(!rdb){cloud='off';renderStatus();return}
@@ -254,7 +287,7 @@ let softT=null;
 function soft(){clearTimeout(softT);softT=setTimeout(()=>{if(modalStack.length)return;const a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;render()},250)}
 
 /* ---------- veri işlemleri ---------- */
-function put(col,o){o.id=o.id||uid();o.updated=Date.now();S[col][o.id]=o;scheduleSave();pushRemote(col,o.id);return o}
+function put(col,o){o.id=o.id||uid();o.updated=Date.now();S[col][o.id]=o;scheduleSave();pushRemote(col,o.id);serverPush();return o}
 function remove(col,id){const o=S[col][id];if(o){put(col,{...o,deleted:true})}}
 function renderStatus(){
   const el=$('#status');if(!el)return;
